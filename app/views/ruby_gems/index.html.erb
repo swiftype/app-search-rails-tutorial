@@ -4,11 +4,37 @@
 
   <%= form_tag({}, {method: :get}) do %>
     <div class="form-group row">
-      <%= text_field_tag(:query, @query, class: "form-control", placeholder: "My favorite gem...") %>
+      <%= text_field_tag(:q, @q, class: "form-control", placeholder: "My favorite gem...") %>
     </div>
 
     <div class="form-group row">
       <%= submit_tag("Search", class: "btn btn-primary mb-2") %>
     </div>
+  <% end %>
+</div>
+
+<div>
+  <% if @rubygems.any? %>
+
+    <table class="table table-hover">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Gem Name</th>
+          <th scope="col">Authors</th>
+          <th scope="col">Details</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <% @rubygems.each do |rubygem| %>
+          <tr>
+            <td><%= rubygem.name %></td>
+            <td><%= rubygem.authors %></td>
+            <td><%= link_to 'Gem Details', ruby_gem_path(rubygem) %></td>
+          </tr>
+        <% end %>
+
+      </tbody>
+    </table>
   <% end %>
 </div>
