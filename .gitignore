@@ -25,5 +25,8 @@
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 
+# Ignore the local database.yml
+/config/database.yml
+
 # Ignore the datafile used to seed our collection of gems
 rubygems.json

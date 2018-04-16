@@ -1,24 +1,16 @@
-# README
+# James' Gem Hunt
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+### The App
 
-Things you may want to cover:
+Gem Hunt is the tool to use when you're hunting for a gem! It is a simple search interface for RubyGems built using Swiftype's App Search product. To get the app running, you'll need:
 
-* Ruby version
+- Ruby! But you probably knew that.
+- A database that supports the json data type (I used PostgreSQL).
+- The `credentials.yml.enc` for James' Gem Hunt, or your own App Search credentials and a json dump of gem metadata.
+- To run `bin/setup`, which should install all the required gems, make sure you have the proper Ruby installed, and setup your database.
+- To populate the database with the `ruby_gems:populate[my_file.json]` task.
+- And finally, if you're using a new App Search Account, you'll need to initially index your gems using the `ruby_gems:initial_index` task.
 
-* System dependencies
+### The Process
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+### The Rough Spots
