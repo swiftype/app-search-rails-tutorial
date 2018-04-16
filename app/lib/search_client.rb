@@ -20,4 +20,22 @@ class SearchClient
 
     index_result
   end
+
+  def search(query)
+    #TODO handle errors somehow? Maybe wrap the response in a Response object?
+    raw_response = client.search(ENGINE_NAME, query)
+
+    #TODO Handle pagination, this only returns the first ten
+    raw_response['results'].map{|i| parse_item(i) }
+  end
+
+  ResponseItem = Struct.new(:id, :name, :authors)
+
+  def parse_item(raw_item)
+    ResponseItem.new(
+      raw_item['id']['raw'].to_i,
+      raw_item['name']['raw'],
+      raw_item['authors']['raw']
+    )
+  end
 end

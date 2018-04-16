@@ -11,11 +11,8 @@ class RubyGemsController < ApplicationController
 
   def search_results
     if search_params[:q].present?
-      # Worst Search Algorithm
-      random_offset = [0, rand(RubyGem.count) - 10].max
-      random_size = rand(100)
-
-      RubyGem.offset(random_offset).limit(random_size)
+      #TODO handle pagination, errors
+      search_client.search(search_params[:q])
     else
       []
     end
@@ -23,5 +20,9 @@ class RubyGemsController < ApplicationController
 
   def search_params
     params.permit(:q)
+  end
+
+  def search_client
+    @client ||= SearchClient.new
   end
 end
