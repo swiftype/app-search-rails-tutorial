@@ -31,9 +31,11 @@ Gem Hunt is the tool to use when you're hunting for a gem! It is a simple search
 
 3. The docs do a great job of describing the options for searching, filtering, and controlling the format of the API result, but it doesn't mention that the results are paginated. Unpacking the result format is also a little arduous, but it might be better for less general use cases than what I'm using now.
 
-4. It seems like Value Facets are a kind of aggregation, but I'll admit that after reading the docs I was still confused about them. Maybe this could use a little more explanation.
+4. It seems like Value Facets are a kind of aggregation, but I'll admit that after reading the docs I was still confused about them. Maybe this could use a little more explanation. UPDATE: Chris Wang was kind enough to help me understand Value Facets! I think the section could be improved by the addition of a little more up front explanation and sample query responses.
 
 5. I'd just reiterate that in the Searching section especially, it'd really be nice to see some example API responses. There are quite a few options for queries, and it'd be great to see what you can expect out of the other side as you tweak them.
+
+6. It'd be swell if the headings in the API guides were anchors, so they could be linked to directly.
 
 ### Possible Next Steps
 
