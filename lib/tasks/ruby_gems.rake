@@ -19,11 +19,16 @@ namespace :ruby_gems do
 
     if gems.none?
       Rails.logger.info "No unindexed gems found, skipping indexing."
-    end
+    else
+      Rails.logger.info "Attempting to index gems with IDs (#{gems.select(:id).map(&:id).join(', ')})"
+      result = SearchClient.new.index(gems)
 
-    Rails.logger.info "Attempting to index gems with IDs (#{gems.select(:id).map(&:id).join(', ')})"
-    SearchClient.new.index(gems)
-    #TODO handle the api response less optimistically
-    Rails.logger.info "Done indexing, I hope it worked!"
+      Rails.logger.info "Indexing successful for gems with IDs: (#{result.successful_ids.join(', ')})"
+
+      if result.errored_documents.any?
+        errored_gems = result.errored_documents.map {|d| [d.id, d.errors] }.to_h
+        Rails.logger.info "Indexing failed for some gems (#{errored_gems.inspect})"
+      end
+    end
   end
 end

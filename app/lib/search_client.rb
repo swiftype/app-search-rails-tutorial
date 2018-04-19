@@ -3,22 +3,25 @@ class SearchClient
 
   ENGINE_NAME = 'gem-hunt'
 
-  def initialize
-    @client = SwiftypeAppSearch::Client.new(
+  def initialize(client=build_client)
+    @client = client
+  end
+
+  def build_client
+    SwiftypeAppSearch::Client.new(
       account_host_key: Rails.application.credentials.swiftype[:account_host_key],
       api_key: Rails.application.credentials.swiftype[:api_key],
     )
   end
 
   def index(gems_to_index)
-    documents = gems_to_index.map(&:to_app_search_document)
+    raw_response = client.index_documents(ENGINE_NAME, gems_to_index.map(&:to_app_search_document))
 
-    #TODO handle errors somehow? Maybe wrap the response in a Response object?
-    index_result = client.index_documents(ENGINE_NAME, documents)
+    result = IndexResult.new(raw_response)
 
-    RubyGem.where(id: gems_to_index.map(&:id)).update_all(indexed_at: Time.now)
+    RubyGem.where(id: result.successful_ids).update_all(indexed_at: Time.now)
 
-    index_result
+    result
   end
 
   def search(query)
