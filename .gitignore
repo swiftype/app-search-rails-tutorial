@@ -7,6 +7,10 @@
 # Ignore bundler config.
 /.bundle
 
+# Ignore the default SQLite database.
+/db/*.sqlite3
+/db/*.sqlite3-journal
+
 # Ignore all logfiles and tempfiles.
 /log/*
 /tmp/*
@@ -27,6 +31,3 @@
 
 # Ignore the local database.yml
 /config/database.yml
-
-# Ignore the datafile used to seed our collection of gems
-rubygems.json
