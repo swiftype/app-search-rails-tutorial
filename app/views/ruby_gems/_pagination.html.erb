@@ -1,0 +1,26 @@
+<% if search_response.total_pages > 1 %>
+  <p>Showing page #<%= search_response.current_page %> of <%= search_response.total_pages %>.</p>
+  <p>Total results: <%= search_response.total_results %></p>
+  <nav aria-label="Search results pages">
+    <ul class="pagination">
+      <% if search_response.current_page == 1 %>
+        <li class="page-item disabled">
+          <a class="page-link" href="#" tabindex="-1">Previous</a>
+        </li>
+      <% else %>
+        <li class="page-item">
+          <%= link_to('Previous', ruby_gems_path(q: query, page: search_response.current_page - 1), class: 'page-link') %>
+        </li>
+      <% end %>
+      <% if search_response.current_page == search_response.total_pages %>
+        <li class="page-item disabled">
+          <a class="page-link" href="#" tabindex="-1">Next</a>
+        </li>
+      <% else %>
+        <li class="page-item">
+          <%= link_to('Next', ruby_gems_path(q: query, page: search_response.current_page + 1), class: 'page-link') %>
+        </li>
+      <% end %>
+    </ul>
+  </nav>
+<% end %>

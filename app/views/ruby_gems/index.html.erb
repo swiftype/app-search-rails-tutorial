@@ -14,7 +14,7 @@
 </div>
 
 <div>
-  <% if @rubygems.any? %>
+  <% if @search_response&.results&.any? %>
 
     <table class="table table-hover">
       <thead class="thead-dark">
@@ -26,7 +26,7 @@
       </thead>
       <tbody>
 
-        <% @rubygems.each do |rubygem| %>
+        <% @search_response.results.each do |rubygem| %>
           <tr>
             <td><%= rubygem.name %></td>
             <td><%= rubygem.authors %></td>
@@ -36,5 +36,7 @@
 
       </tbody>
     </table>
+
+    <%= render "pagination", search_response: @search_response, query: params[:q] %>
   <% end %>
 </div>

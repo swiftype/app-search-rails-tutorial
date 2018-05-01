@@ -24,21 +24,27 @@ class SearchClient
     result
   end
 
-  def search(query)
-    #TODO handle errors somehow? Maybe wrap the response in a Response object?
-    raw_response = client.search(ENGINE_NAME, query)
+  def search(query, raw_options={})
+    options = default_search_options.deep_merge(raw_options)
 
-    #TODO Handle pagination, this only returns the first ten
-    raw_response['results'].map{|i| parse_item(i) }
+    begin
+      SearchResult.new(client.search(ENGINE_NAME, query, options))
+
+    rescue SwiftypeAppSearch::ClientException => e
+      Rails.logger.error "SearchClient API client error: #{e.inspect}"
+
+      SearchResult.new({}, e)
+    end
   end
 
-  ResponseItem = Struct.new(:id, :name, :authors)
+  private
 
-  def parse_item(raw_item)
-    ResponseItem.new(
-      raw_item['id']['raw'].to_i,
-      raw_item['name']['raw'],
-      raw_item['authors']['raw']
-    )
+  def default_search_options
+    {
+      search_fields: {
+        name: { weight: 2.0 },
+      },
+      page: { size: 30 },
+    }
   end
 end
