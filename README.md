@@ -1,48 +1,235 @@
-# James' Gem Hunt
+# App Search Rails Tutorial
 
-### The App
+This tutorial will guide you through adding a simple search feature to a Ruby on Rails application using Swiftype's App Search.
 
-Gem Hunt is the tool to use when you're hunting for a gem! It is a simple search interface for RubyGems built using Swiftype's App Search product. Getting things up and running is fairly simple:
+## Setup
 
-- You'll need Ruby, but you probably knew that.
-- You'll need a database that supports the json data type (I used PostgreSQL).
-- And you'll need the `credentials.yml.enc` for James' Gem Hunt, or your own App Search credentials and a json dump of gem metadata.
-- Running `bin/setup` should get you most of the way, which should install all the required gems, make sure you have the proper Ruby installed, and setup your database.
-- You can then populate the database with the `ruby_gems:populate[my_file.json]` task.
-- Finally, if you're using a new App Search Account, you'll need to initially index your gems using the `ruby_gems:initial_index` task.
+To get started, simply clone this repository and run `bin/setup`. This will install bundler and the required gems, setup the SQLite database, and populate it with seed data.
 
-### The Process
+```console
+jgr@prompt:~$ git clone git@github.com:Swiftype/app-search-rails-tutorial.git
+jgr@prompt:~$ cd app-search-rails-tutorial
 
-- Go to https://swiftype.com/app-search, and click "join the free beta"
-- create a swiftype account and verify your email address
-- log in and click the "Access the Beta" button next to the text "Looking to try out App Search?"
-- Create your first engine! [1]
-- Now grab your [authentication credentials](https://app.swiftype.com/as/credentials), and store them with the rest of your secrets (I used [Rails encrypted credentials](https://www.engineyard.com/blog/rails-encrypted-credentials-on-rails-5.2)).
-- My app currently lets you search for and show information about RubyGems, but it has [The worst search algorithm](https://github.com/swiftype/james-gem-hunt/blob/5e7f610b943175fc20b80d5d7f58dba074fecaf7/app/controllers/ruby_gems_controller.rb#L15:L18), lets see if we can improve it using App Search.
-- Since App Search manages it's own schema, there's nothing else to setup...we can just start Indexing documents. Using the [swiftype-app-search-ruby gem](https://github.com/swiftype/swiftype-app-search-ruby) makes this fairly painless. Just put the relevant fields into a hash and submit them as a document. [2]
+jgr@prompt:~/app-search-rails-tutorial$ bin/setup
+```
 
-- The App Search [Search API]() has many options at your disposal to help you fulfill your searching needs, but to get started, we're just going to pass it our query directly and let it search across all the fields we have indexed. [3]
+To make sure everything is in order, lets fire up the app with `rails server` and see what we're starting with.
 
-### The Rough Spots
+```console
+jgr@prompt:~/app-search-rails-tutorial$ rails server
+=> Booting Puma
+=> Rails 5.2.0 application starting in development
+=> Run `rails server -h` for more startup options
+Puma starting in single mode...
+* Version 3.11.3 (ruby 2.5.1-p57), codename: Love Song
+* Min threads: 5, max threads: 5
+* Environment: development
+* Listening on tcp://0.0.0.0:3000
+Use Ctrl-C to stop
+```
 
-1. When you first enter App Search, you are prompted to create your first engine. It'd be nice to have a little explanation for what it is you're creating, similar to the explanation provided [here under step 2: creating an engine](https://swiftype.com/documentation/app-search/getting-started). You actually aren't linked to this documentation until after you've created the engine.
+Once the server has started, open up your browser and navigate to [localhost:3000](http://localhost:3000), you should see something like this:
 
-2. both the [Getting Started Guide](https://swiftype.com/documentation/app-search/getting-started) and the [Indexing Documents Guide](https://swiftype.com/documentation/app-search/guides/indexing-documents) describe the basics of documents, but neither talks at all about the ID field. It's hinted at that it is important in other sections where it is used to reference specific documents.
+![Initial App Screenshot](readme_images/initial_app.png)
 
-3. The docs do a great job of describing the options for searching, filtering, and controlling the format of the API result, but it doesn't mention that the results are paginated. Unpacking the result format is also a little arduous, but it might be better for less general use cases than what I'm using now.
+Great! We're done! Or are we? You may have noticed that the app currently returns every gem, regardless of what you enter in the search box. Let's see if we can improve our search results with App Search.
 
-4. It seems like Value Facets are a kind of aggregation, but I'll admit that after reading the docs I was still confused about them. Maybe this could use a little more explanation. UPDATE: Chris Wang was kind enough to help me understand Value Facets! I think the section could be improved by the addition of a little more up front explanation and sample query responses.
+## Swiftype App Search Setup
 
-5. I'd just reiterate that in the Searching section especially, it'd really be nice to see some example API responses. There are quite a few options for queries, and it'd be great to see what you can expect out of the other side as you tweak them.
+Head on over to [Swiftype App Search](https://swiftype.com/app-search) and create a free trial account. Once you've created your account and logged in for the first time, be sure to click the **Access the Beta** button next to the text **Looking to try out App Search?**
 
-6. It'd be swell if the headings in the API guides were anchors, so they could be linked to directly.
+Now it's time to create your first engine! An engine is primarily a repository for your indexed search records, but it also stores search analytics and any search configurations that you require. For the purposes of this tutorial, I suggest you name your engine **ruby-gems**.
 
-### Possible Next Steps
+![Create Engine Screenshot](readme_images/create_engine.png)
 
-- Catch exceptions thrown by the API Client in my client code.
-- Handle errors surfaced in the indexing API response (right now the code just assumes it worked).
-- Handle pagination of Search Results...right now we only ever display the first ten.
-  - This will require understanding how to request the next page of search results.
-- Weight the query so that matches to `name` are more important than matches to `info`, it's a little weird that things that mention Rake rank above the actual Rake gem.
-- Support more interesting queries, either through a more complicated search form, or parsing special query invocations.
-- Pretty up "The Process" portion of my readme, so it more resembles a tutorial.
+## Install & Configure Swiftype App Search Client
+
+Let's get the App Search client in our app so we can start working with it. Open up the `Gemfile`, and add:
+
+```ruby
+gem 'swiftype-app-search', '~> 0.1.1'
+```
+
+Then, run `bundle install` to install the gem.
+
+```console
+jgr@prompt:~/app-search-rails-tutorial$ bundle install
+```
+
+Finally, we're going to need our credentials so we can authorize ourselves to the Swiftype App Search API. Take a look at [your credentials](https://app.swiftype.com/as/credentials) on the [App Search Dashboard](https://app.swiftype.com/as/credentials), and take note of your **Account Key** near the top, and the **token** value of your **api-key**.
+
+There are many different ways to keep track of API keys and other secret information in your development environment (The [dotenv gem](https://github.com/bkeepers/dotenv), for example), but for the purposes of this tutorial, we're going to go with a tried and true Rails method...a yaml config file loaded by an initializer.
+
+I've already provided you with `config/swiftype.yml` for the purpose, go ahead and open it now and fill it out with the **Account Key** and **api-key token** you found in the previous step.
+
+```yaml
+# config/swiftype.yml
+
+app_search_account_key: host-c5s2mj # your Account Key
+app_search_api_key: api-mu75psc5egt9ppzuycnc2mc3 # your API Key Token
+```
+
+Now lets add a simple initializer to load this configuration.
+
+```ruby
+# config/initializers/swiftype.rb
+
+Rails.application.configure do
+  swiftype_config = YAML.load_file(Rails.root.join('config', 'swiftype.yml'))
+
+  config.x.swiftype.app_search_account_key = swiftype_config['app_search_account_key']
+  config.x.swiftype.app_search_api_key = swiftype_config['app_search_api_key']
+end
+```
+
+We're going to want to use this client in a few different places across the application, so lets wrap it in a small class.
+
+```ruby
+# app/lib/search.rb
+
+class Search
+  ENGINE_NAME = 'ruby-gems'
+
+  def self.client
+    @client ||= SwiftypeAppSearch::Client.new(
+      account_host_key: Rails.configuration.x.swiftype.app_search_account_key,
+      api_key: Rails.configuration.x.swiftype.app_search_api_key,
+    )
+  end
+end
+```
+
+## Hook Into the Model Lifecycle
+
+Now that we have an API client, it's time to start using it! Since the records in our Rails app are the "source of truth" for our ruby gems data, we'll want to update App Search on any changes that happen to them within our database. We're going to achieve this with ActiveRecord callbacks. Let's add an `after_commit` and an `after_destroy` callback to our `RubyGem` model to notify app search when we change or remove a record.
+
+```ruby
+# app/models/ruby_gem.rb
+
+class RubyGem < ApplicationRecord
+  validates :name, presence: true, uniqueness: true
+
+  after_commit do |record|
+    client = Search.client
+    document = record.as_json(only: [:id, :name, :authors, :info])
+
+    client.index_document(Search::ENGINE_NAME, document)
+  end
+
+  after_destroy do |record|
+    client = Search.client
+    document = record.as_json(only: [:id])
+
+    client.destroy_documents(Search::ENGINE_NAME, [ document[:id] ])
+  end
+
+ # ...
+
+end
+
+```
+
+One thing to note is that, for the purposes of this tutorial, we're making these calls from within the callback. Generally, you'd want to do the actual work of calling a third party service asynchronously, from within a job. This way requests to your application don't have to wait on them. If you aren't familiar with asynchronous job services, take a look at the [ActiveJob](http://guides.rubyonrails.org/active_job_basics.html) framework provided by Rails.
+
+Now, just to make sure things are working as expected, lets fire up a `rails console` and make a small change to a gem, and see that it is indexed.
+
+```console
+jgr@prompt:~/app-search-rails-tutorial$ rails console
+# ...
+irb(main):008:0> puma = RubyGem.find_by_name('puma')
+=> # ...
+irb(main):009:0> puma.info += ' Also, pumas are fast.'
+=> # ...
+irb(main):010:0> puma.save
+=> true
+```
+
+After adding a little editorial commentary, pop open your browser and take a look at the [documents panel in the App Search Dashboard](https://app.swiftype.com/as/engines/ruby-gems/documents). You should see a document that corresponds to the `puma` gem, your first indexed document!
+
+![Puma Document Screenshot](readme_images/puma_doc.png)
+
+Great! At this point we could just go through all of our records and force them to reindex, but that might take awhile. Thankfully, the App Search API allows us to batch our index requests up to index as many as 100 documents at a time.
+
+## Index Records in Batches
+
+If you're building App Search into an application from the start, you may not need to worry about indexing existing data, you could just let the `after_commit` hook above handle them as they come in. However, we already have more than 11,000 ruby gem records in our database! Let's write a rake task to index them all, 100 at a time.
+
+```ruby
+# lib/tasks/ruby_gems.rake
+
+namespace :app_search do
+  desc "index every Ruby Gem in batches of 100"
+  task seed: [:environment] do |t|
+    client = Search.client
+
+    RubyGem.in_batches(of: 100) do |gems|
+      Rails.logger.info "Indexing #{gems.count} gems..."
+
+      documents = gems.map {|gem| gem.as_json(only: [:id, :name, :authors, :info]) }
+
+      client.index_documents(Search::ENGINE_NAME, documents)
+    end
+  end
+end
+```
+
+You can run this from the command line. Consider watching the log file in another terminal so you can see it in action (`tail -f log/development.log` works well for this purpose.)
+
+```console
+jgr@prompt:~/app-search-rails-tutorial$ rails app_search:seed
+```
+
+If you take another look at the [documents panel in the App Search Dashboard](https://app.swiftype.com/as/engines/ruby-gems/documents), you should see all of our documents are now indexed!
+
+![All the Documents Screenshot](readme_images/all_the_docs.png)
+
+## Putting the Search in App Search
+
+Now that we have all of our documents indexed in App Search, and are confident that they will stay up to date, lets actually use them to power our search! Let's open up the `RubyGemsController` and change the index action to use our App Search client.
+
+```ruby
+# app/controllers/ruby_gems_controller.rb
+
+class RubyGemsController < ApplicationController
+
+  PAGE_SIZE = 30
+
+  def index
+    if search_params[:q].present?
+      @current_page = (search_params[:page] || 1).to_i
+
+      search_client = Search.client
+      search_options = {
+        page: {
+          current: @current_page,
+          size: PAGE_SIZE,
+        },
+      }
+
+      search_response = search_client.search(Search::ENGINE_NAME, search_params[:q], search_options)
+      @total_pages = search_response['meta']['page']['total_pages']
+      result_ids = search_response['results'].map {|rg| rg['id']['raw'].to_i }
+
+      @search_results = RubyGem.where(id: result_ids)
+    end
+  end
+
+  def show
+    @rubygem = RubyGem.find(params[:id])
+  end
+
+  private
+
+  def search_params
+    params.permit(:q, :page)
+  end
+end
+```
+
+Head on over to [localhost:3000](http://localhost:3000) and enjoy your newly App-Search-ified Search Engine!
+
+## Hungry for More?
+
+Check out our other tutorials and guides on [the App Search Documentation page](https://swiftype.com/documentation/app-search/getting-started).
+
+

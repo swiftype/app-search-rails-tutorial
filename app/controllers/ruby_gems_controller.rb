@@ -1,11 +1,15 @@
 class RubyGemsController < ApplicationController
+
+  PAGE_SIZE = 30
+
   def index
     if search_params[:q].present?
-      @search_response = search_client.search(search_params[:q], search_options)
+      @current_page = (search_params[:page] || 1).to_i
+      @total_pages = (RubyGem.count / PAGE_SIZE.to_f).ceil
 
-      if @search_response.error?
-        flash.now[:alert] = "We've run into a problem with our search provider. Please try again, or let us know!"
-      end
+      page_offset = (@current_page - 1) * PAGE_SIZE
+
+      @search_results = RubyGem.order(:created_at).limit(PAGE_SIZE).offset(page_offset)
     end
   end
 
@@ -17,17 +21,5 @@ class RubyGemsController < ApplicationController
 
   def search_params
     params.permit(:q, :page)
-  end
-
-  def search_options
-    page_param = search_params[:page] ? search_params[:page].to_i : 1
-
-    {
-      page: { current: page_param },
-    }
-  end
-
-  def search_client
-    @client ||= SearchClient.new
   end
 end

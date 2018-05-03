@@ -14,13 +14,4 @@ class RubyGem < ApplicationRecord
 
     new_gem
   end
-
-  def to_app_search_document
-    {
-      id: self.id,
-      name: self.name,
-      authors: self.authors,
-      info: self.info,
-    }
-  end
 end
