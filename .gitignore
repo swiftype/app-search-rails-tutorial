@@ -31,3 +31,6 @@
 
 # Ignore the local database.yml
 /config/database.yml
+
+# Ignore the local swiftype.yml
+/config/swiftype.yml
