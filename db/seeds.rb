@@ -1,7 +1,17 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
-#   Character.create(name: 'Luke', movie: movies.first)
+# Loads Ruby Gems data from file
+
+docs = File.readlines(File.expand_path('./data/rubygems.json'))
+
+puts "\n-- seeding the database"
+
+docs.each_with_index do |doc, i|
+  RubyGem.from_json(doc).save!
+
+  #Print a dot every 100 gems
+  if (i % 100) == 0
+    print '.'
+    $stdout.flush
+  end
+end
+
+print "done!\n"
