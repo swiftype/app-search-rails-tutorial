@@ -4,8 +4,7 @@ class CreateRubyGems < ActiveRecord::Migration[5.2]
       t.string :name
       t.string :authors
       t.text :info
-
-      t.json :raw_json
+      t.integer :downloads
 
       t.timestamps
     end

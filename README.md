@@ -117,7 +117,7 @@ class RubyGem < ApplicationRecord
 
   after_commit do |record|
     client = Search.client
-    document = record.as_json(only: [:id, :name, :authors, :info])
+    document = record.as_json(only: [:id, :name, :authors, :info, :downloads])
 
     client.index_document(Search::ENGINE_NAME, document)
   end
@@ -171,7 +171,7 @@ namespace :app_search do
     RubyGem.in_batches(of: 100) do |gems|
       Rails.logger.info "Indexing #{gems.count} gems..."
 
-      documents = gems.map {|gem| gem.as_json(only: [:id, :name, :authors, :info]) }
+      documents = gems.map {|gem| gem.as_json(only: [:id, :name, :authors, :info, :downloads]) }
 
       client.index_documents(Search::ENGINE_NAME, documents)
     end
@@ -274,6 +274,10 @@ end
 Note that if you provide the `search_fields` option to the searching API, you must include every field you would like to be included in the search. This is why we had to add **info** and **authors**, even though we wanted them to still be weighted at the default.
 
 If you search again, rake should be the first result! If you're curious to read more about weights, check out the weights section of the [App Search searching guide](https://swiftype.com/documentation/app-search/guides/searching).
+
+## Filtering to the top
+
+## Recording Clickthroughs for Analytics
 
 ## Hungry for More?
 

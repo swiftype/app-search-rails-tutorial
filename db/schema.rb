@@ -16,7 +16,7 @@ ActiveRecord::Schema.define(version: 2018_04_12_183616) do
     t.string "name"
     t.string "authors"
     t.text "info"
-    t.json "raw_json"
+    t.integer "downloads"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
