@@ -343,6 +343,8 @@ Now, back in the controller, lets add a filter to our search options based on th
   # ...
 ```
 
+Now try searching for a gem with fewer downloads, like **heyzap-authlogic-oauth**. With the checkbox unchecked, it's the first result! With it checked, we instead get gems with a wider audience, like **authlogic** and **oauth**.
+
 ## Recording Clickthroughs for Analytics
 
 ## Hungry for More?
