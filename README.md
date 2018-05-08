@@ -277,6 +277,72 @@ If you search again, rake should be the first result! If you're curious to read 
 
 ## Filtering to the top
 
+App Search also allows you to specify filters to filter the search results returned. Let's add a filter to only show gems with over a million downloads.  First, lets add the checkbox to our form.
+
+```ruby
+# app/views/ruby_gems/index.html.erb
+
+# ...
+
+  <%= form_tag({}, {method: :get}) do %>
+    <div class="form-group row">
+      <%= text_field_tag(:q, params[:q], class: "form-control", placeholder: "My favorite gem...") %>
+    </div>
+
+     <div class="form-check">
+       <%= check_box_tag('popular', 1, params[:popular], class: 'form-check-input') %>
+       <label class="form-check-label" for="popular">Only include gems with more than a million downloads.</label>
+     </div>
+
+    <div class="form-group row">
+      <%= submit_tag("Search", class: "btn btn-primary mb-2") %>
+    </div>
+  <% end %>
+
+# ...
+```
+
+Now, back in the controller, lets add a filter to our search options based on the presence of the `:popular` parameter.
+
+```ruby
+# app/controllers/ruby_gems_controller.rb
+
+  # ...
+
+  def index
+    if search_params[:q].present?
+      @current_page = (search_params[:page] || 1).to_i
+
+      search_client = Search.client
+      search_options = {
+        search_fields: {
+          name: { weight: 2.0 },
+          info: {},
+          authors: {},
+        },
+        page: {
+          current: @current_page,
+          size: PAGE_SIZE,
+        },
+      }
+
+      if search_params[:popular].present?
+        search_options[:filters] = {
+          downloads: { from: 1_000_000, to: 500_000_000 },
+        }
+      end
+
+  # ...
+
+  private
+
+  def search_params
+    params.permit(:q, :page, :popular)
+  end
+
+  # ...
+```
+
 ## Recording Clickthroughs for Analytics
 
 ## Hungry for More?
