@@ -234,6 +234,47 @@ end
 
 Head on over to [localhost:3000](http://localhost:3000) and enjoy your newly App-Search-ified Search Engine!
 
+## A weighty consideration
+
+As you tried out our improved Gem Hunt, you may have noticed that it still could use some improvement. For example, if you search for **rake**, the actual rake gem is the 14th result! Thankfully, App Search provides us with a way to configure our query to weight certain fields more heavily than others when computing search results. Let's more heavily weight the **name** field, so that searching for a gem by name results in it being much closer to the top, but leave the **info** and **authors** fields weighted at the default of `1.0`.
+
+```ruby
+# app/controllers/ruby_gems_controller.rb
+
+# ...
+
+def index
+  if search_params[:q].present?
+    @current_page = (search_params[:page] || 1).to_i
+
+    search_client = Search.client
+    search_options = {
+      search_fields: {
+        name: { weight: 2.0 },
+        info: {},
+        authors: {},
+      },
+      page: {
+        current: @current_page,
+        size: PAGE_SIZE,
+      },
+    }
+
+    search_response = search_client.search(Search::ENGINE_NAME, search_params[:q], search_options)
+    @total_pages = search_response['meta']['page']['total_pages']
+    result_ids = search_response['results'].map {|rg| rg['id']['raw'].to_i }
+
+    @search_results = RubyGem.where(id: result_ids).sort_by {|rg| result_ids.index(rg.id) }
+  end
+end
+
+# ...
+```
+
+Note that if you provide the `search_fields` option to the searching API, you must include every field you would like to be included in the search. This is why we had to add **info** and **authors**, even though we wanted them to still be weighted at the default.
+
+If you search again, rake should be the first result! If you're curious to read more about weights, check out the weights section of the [App Search searching guide](https://swiftype.com/documentation/app-search/guides/searching).
+
 ## Hungry for More?
 
 Check out our other tutorials and guides on [the App Search Documentation page](https://swiftype.com/documentation/app-search/getting-started).
