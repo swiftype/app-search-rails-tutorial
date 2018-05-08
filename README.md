@@ -34,9 +34,9 @@ Once the server has started, open up your browser and navigate to [localhost:300
 
 Great! We're done! Or are we? You may have noticed that the app currently returns every gem, regardless of what you enter in the search box. Let's see if we can improve our search results with App Search.
 
-## Swiftype App Search Setup
+## Setup Swiftype App Search
 
-Head on over to [Swiftype App Search](https://swiftype.com/app-search) and create a free trial account. Once you've created your account and logged in for the first time, be sure to click the **Access the Beta** button next to the text **Looking to try out App Search?**
+Head on over to [Swiftype App Search](https://swiftype.com/app-search) and create a free trial account. Once you've created your account and logged in for the first time, be sure to click the **Access the Beta** button next to **Looking to try out App Search?**
 
 Now it's time to create your first engine! An engine is primarily a repository for your indexed search records, but it also stores search analytics and any search configurations that you require. For the purposes of this tutorial, I suggest you name your engine **ruby-gems**.
 
@@ -56,9 +56,9 @@ Then, run `bundle install` to install the gem.
 jgr@prompt:~/app-search-rails-tutorial$ bundle install
 ```
 
-Finally, we're going to need our credentials so we can authorize ourselves to the Swiftype App Search API. Take a look at [your credentials](https://app.swiftype.com/as/credentials) on the [App Search Dashboard](https://app.swiftype.com/as/credentials), and take note of your **Account Key** near the top, and the **token** value of your **api-key**.
+Finally, we're going to need our credentials so we can authorize ourselves to the Swiftype App Search API. Take a look at [your credentials on the App Search Dashboard](https://app.swiftype.com/as/credentials), and take note of your **Account Key** near the top, and your **api-key** (the part labelled **token**).
 
-There are many different ways to keep track of API keys and other secret information in your development environment (The [dotenv gem](https://github.com/bkeepers/dotenv), for example), but for the purposes of this tutorial, we're going to go with a tried and true Rails method...a yaml config file loaded by an initializer.
+There are many different ways to keep track of API keys and other secret information in your development environment (The [dotenv gem](https://github.com/bkeepers/dotenv), for example), but for the purposes of this tutorial, we're going to go with a tried and true method...a yaml config file.
 
 I've already provided you with `config/swiftype.yml` for the purpose, go ahead and open it now and fill it out with the **Account Key** and **api-key token** you found in the previous step.
 
@@ -99,9 +99,15 @@ class Search
 end
 ```
 
+If you're using Spring (you probably are by default), you may need to restart the Spring preloader so that it notices the `app/lib` directory.
+
+```console
+jgr@prompt:~/app-search-rails-tutorial$ bundle exec spring stop
+```
+
 ## Hook Into the Model Lifecycle
 
-Now that we have an API client, it's time to start using it! Since the records in our Rails app are the "source of truth" for our ruby gems data, we'll want to update App Search on any changes that happen to them within our database. We're going to achieve this with ActiveRecord callbacks. Let's add an `after_commit` and an `after_destroy` callback to our `RubyGem` model to notify app search when we change or remove a record.
+Now that we have an API client, it's time to start using it! Since the records in our Rails app are the "source of truth" for our ruby gems data, we'll want to update App Search on any changes that happen to them within our database. We're going to achieve this with ActiveRecord callbacks. Let's add an `after_commit` callback to notify App Search of any new records, or changes to existing records, and an `after_destroy` callback for when we remove a record.
 
 ```ruby
 # app/models/ruby_gem.rb
@@ -129,7 +135,7 @@ end
 
 ```
 
-One thing to note is that, for the purposes of this tutorial, we're making these calls from within the callback. Generally, you'd want to do the actual work of calling a third party service asynchronously, from within a job. This way requests to your application don't have to wait on them. If you aren't familiar with asynchronous job services, take a look at the [ActiveJob](http://guides.rubyonrails.org/active_job_basics.html) framework provided by Rails.
+One thing to note is that, for the purposes of this tutorial, we're making these calls from within the callback. Generally, you'd want to do the actual work of calling a third party service asynchronously, from within a job. This way requests to your application don't have to wait on their own requests to third party services. If you aren't familiar with asynchronous job services, take a look at the [ActiveJob](http://guides.rubyonrails.org/active_job_basics.html) framework provided by Rails.
 
 Now, just to make sure things are working as expected, lets fire up a `rails console` and make a small change to a gem, and see that it is indexed.
 
@@ -144,18 +150,18 @@ irb(main):010:0> puma.save
 => true
 ```
 
-After adding a little editorial commentary, pop open your browser and take a look at the [documents panel in the App Search Dashboard](https://app.swiftype.com/as/engines/ruby-gems/documents). You should see a document that corresponds to the `puma` gem, your first indexed document!
+After adding this little bit of editorial commentary, pop open your browser and take a look at the [documents panel in the App Search Dashboard](https://app.swiftype.com/as/engines/ruby-gems/documents). You should see a document that corresponds to the `puma` gem, your first indexed document!
 
 ![Puma Document Screenshot](readme_images/puma_doc.png)
 
-Great! At this point we could just go through all of our records and force them to reindex, but that might take awhile. Thankfully, the App Search API allows us to batch our index requests up to index as many as 100 documents at a time.
+Great! At this point we could just go through all of our records and force them to reindex by making small changes, but that might take awhile. Thankfully, the App Search API allows us to batch our index requests to index as many as 100 documents at a time.
 
 ## Index Records in Batches
 
 If you're building App Search into an application from the start, you may not need to worry about indexing existing data, you could just let the `after_commit` hook above handle them as they come in. However, we already have more than 11,000 ruby gem records in our database! Let's write a rake task to index them all, 100 at a time.
 
 ```ruby
-# lib/tasks/ruby_gems.rake
+# lib/tasks/app_search.rake
 
 namespace :app_search do
   desc "index every Ruby Gem in batches of 100"
@@ -173,7 +179,7 @@ namespace :app_search do
 end
 ```
 
-You can run this from the command line. Consider watching the log file in another terminal so you can see it in action (`tail -f log/development.log` works well for this purpose.)
+Lets run this now from the command line. Consider watching the log file in another terminal so you can see it in action (`tail -f log/development.log` works well for this purpose.)
 
 ```console
 jgr@prompt:~/app-search-rails-tutorial$ rails app_search:seed
