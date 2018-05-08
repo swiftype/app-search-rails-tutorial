@@ -216,7 +216,7 @@ class RubyGemsController < ApplicationController
       @total_pages = search_response['meta']['page']['total_pages']
       result_ids = search_response['results'].map {|rg| rg['id']['raw'].to_i }
 
-      @search_results = RubyGem.where(id: result_ids)
+      @search_results = RubyGem.where(id: result_ids).sort_by {|rg| result_ids.index(rg.id) }
     end
   end
 
