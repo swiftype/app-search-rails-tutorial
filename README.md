@@ -1,6 +1,6 @@
 # App Search Rails Tutorial
 
-This tutorial will guide you through adding a simple search feature to a Ruby on Rails application using Swiftype's App Search.
+This tutorial will guide you through adding a simple search feature to a Ruby on Rails application using Swiftype's App Search. If you'd rather look over the finished product, take a look at the branch named [complete](https://github.com/swiftype/app-search-rails-tutorial/tree/complete).
 
 ## Setup
 
@@ -345,10 +345,6 @@ Now, back in the controller, lets add a filter to our search options based on th
 
 Now try searching for a gem with fewer downloads, like **heyzap-authlogic-oauth**. With the checkbox unchecked, it's the first result! With it checked, we instead get gems with a wider audience, like **authlogic** and **oauth**.
 
-## Recording Clickthroughs for Analytics
-
 ## Hungry for More?
 
 Check out our other tutorials and guides on [the App Search Documentation page](https://swiftype.com/documentation/app-search/getting-started).
-
-
