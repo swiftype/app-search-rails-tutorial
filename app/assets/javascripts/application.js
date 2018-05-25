@@ -17,3 +17,21 @@
 //= require activestorage
 //= require turbolinks
 //= require_tree .
+
+$('.search-demo__text-input').on('keyup', function() {
+  if ($(this).val().length > 0 && !$('.search-demo').hasClass('active-search')) {
+    $('.search-demo').addClass('active-search');
+  }
+  $('.search-demo').addClass('active-search');
+});
+$('.search-demo__text-input').on('blur', function() {
+  if ($(this).val().length < 1) {
+    $('.search-demo').removeClass('active-search');
+  }
+});
+$('.search-demo__text-input').on('focus', function() {
+  $('.search-demo__input-wrapper').addClass('focus');
+});
+$('.search-demo__text-input').on('blur', function() {
+  $('.search-demo__input-wrapper').removeClass('focus');
+});
