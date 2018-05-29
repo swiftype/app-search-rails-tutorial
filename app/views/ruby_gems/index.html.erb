@@ -31,7 +31,9 @@
           <div class="results">
             <div class="results__header">
               <div class="results__result-count">
-                Showing <strong>1 – 10</strong> of <strong>100</strong>
+                <% if @total_pages > 1 %>
+                  Page <strong><%= @current_page %></strong> of <strong><%= @total_pages %></strong>
+                <% end %>
               </div>
               <div class="results__powered-by powered-by">
                 <%= image_tag('powered-by@2x.png', alt: 'Powered by Swiftype') %>
@@ -43,16 +45,15 @@
                 <% @search_results.each do |rubygem| %>
                   <li class="result">
                     <div class="result__header">
-                      <%= link_to "#{rubygem.name}", ruby_gem_path(rubygem) %>
+                      <div class="result__title"><%= link_to "#{rubygem.name}", ruby_gem_path(rubygem) %></div>
+
                     </div>
 
                     <div class="result__body">
                       <p class="result__description"><%= rubygem.info %></p>
-                    </div>
-
-                    <div class="result__footer">
-                      <div class="result__owner">
-                        <p><%= rubygem.authors %></p>
+                      <div class="result__details">
+                        <p><strong>Downloads: </strong><%= number_with_delimiter(rubygem.downloads, :delimiter => ',') %></p>
+                        <p><strong>Authors: </strong><%= rubygem.authors %></p>
                       </div>
                     </div>
                   </li>
