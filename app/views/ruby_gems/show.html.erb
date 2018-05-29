@@ -1,13 +1,23 @@
-<div class="starter-template">
-  <h1><%= @rubygem.name %></h1>
-</div>
-<div>
-  <dl class="row">
-    <dt class="col-sm-3">Authors</dt>
-    <dd class="col-sm-9"><%= @rubygem.authors %></dd>
-    <dt class="col-sm-3">Total Downloads</dt>
-    <dd class="col-sm-9"><%= @rubygem.downloads %></dd>
-    <dt class="col-sm-3">Info</dt>
-    <dd class="col-sm-9"><%= @rubygem.info %></dd>
-  </dl>
+<div class="gem-page">
+
+  <div class="gem">
+    <div class="gem__back"><%= link_to 'Back to search results', :back %></div>
+    <div class="gem__content">
+      <div class="gem__header">
+        <h1 class="gem__title"><%= @rubygem.name %></h1>
+      </div>
+
+      <div class="gem__body">
+        <div class="gem__description">
+          <p><%= @rubygem.info %></p>
+          <%= @current_page %>
+        </div>
+
+        <div class="gem__details">
+          <div class="gem__downloads"><div class="gem__detail-title">Downloads</div><%= number_with_delimiter(@rubygem.downloads, :delimiter => ',') %></div>
+          <div class="gem__authors"><div class="gem__detail-title">Authors</div><%= @rubygem.authors %></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

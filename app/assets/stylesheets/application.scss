@@ -7,15 +7,13 @@ $easeOutCubic: cubic-bezier(0.215, 0.610, 0.355, 1.000);
 $easeInOutCubic: cubic-bezier(0.645, 0.045, 0.355, 1.000);
 $widthLimit: 1200px;
 $linkColor: #3A56E4;
+$textColor: #828282;
 $facetLinkColor: #4f4f4f;
 $facetCountColor: #8B9BAD;
 $backgroundColor: #f7f7f7;
 $strongColor: #565656;
-
 $offset: 175px;
-
 $appSearchGradient: linear-gradient(left, #5b9ed5, #3a6fbf);
-
 $wavesImage: "../images/bg--waves-crop.jpg";
 
 // Base
@@ -83,14 +81,8 @@ a.subtle-link {
   background-size: cover;
   background-position: top;
   background-repeat: no-repeat;
-  // transition-property: transform, background-color;
-  // transition: 0.5s $easeInOutCubic;
   transform: translateY(0px);
-
-  // .active-search & {
-  //   transform: translateY(0 - $offset);
-  //   opacity: 0.0;
-  // }
+  pointer-events: none;
 }
 
 .search-demo {
@@ -114,8 +106,6 @@ a.subtle-link {
       overflow: auto;
     }
   }
-
-
 
   &__header {
     width: 100%;
@@ -185,7 +175,7 @@ a.subtle-link {
     transition: 0.5s $easeInOutCubic;
 
     &.focus {
-      border: 1px solid $linkColor;
+      border: 1px solid lighten($linkColor, 10%);
 
       .active-search & {
         border-top-color: white;
@@ -203,8 +193,6 @@ a.subtle-link {
       width: 100%;
       margin: auto;
     }
-
-
   }
 
   &__text-input {
@@ -346,7 +334,6 @@ a.subtle-link {
   }
 }
 
-
 .results {
   width: 100%;
   padding: 2rem 0;
@@ -380,31 +367,28 @@ a.subtle-link {
       margin-right: 1rem;
       border-right: 1px solid #e0e0e0;
       padding-right: 1rem;
+
       &:last-of-type {
         margin-right: 0;
         border-right: none;
       }
+
       &:hover {
         a {
           color: lighten($linkColor, 10%);
         }
       }
     }
-
-
   }
-
-
 }
-
 
 .result {
   background: #ffffff;
   border-radius: 4px;
   box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.2);
   padding: 1.5rem 0 1.5rem 0;
-  font-size: 0.85em;
-  color: #828282;
+  font-size: 0.9em;
+  color: $textColor;
 
   strong {
     font-weight: 100;
@@ -439,14 +423,17 @@ a.subtle-link {
     justify-content: space-between;
     align-items: center;
   }
+
   &__title {
-    font-size: 1.5em;
+    font-size: 1.7em;
   }
+
   &__version {
     font-size: 12px;
     display: inline;
     vertical-align: bottom;
   }
+
   &__license {
     font-size: 12px;
     color: #999999;
@@ -500,9 +487,11 @@ a.subtle-link {
 .rc-pagination {
   display: flex;
   justify-content: center;
+
   a {
     color: $linkColor;
   }
+
   > li {
     border: none;
     background: transparent;
@@ -518,6 +507,7 @@ a.subtle-link {
     color: $facetLinkColor;
     font-weight: 900;
   }
+
   &:hover {
     a {
       color: $facetLinkColor;
@@ -526,13 +516,89 @@ a.subtle-link {
     cursor: not-allowed;
   }
 }
+
 .rc-pagination-jump-next:hover:after {
   content: "\BB";
   font-size: 16px;
   line-height: 1.5;
 }
+
 .rc-pagination-jump-prev:hover:after {
   content: "\AB";
   font-size: 16px;
   line-height: 1.5;
+}
+
+// Gem View Page
+.gem-page {
+  background-color: #f7f7f7;
+  padding: 20px;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
+.gem {
+  h1 {
+    font-weight: 100;
+  }
+
+  p {
+    color: $textColor;
+    font-size: 1em;
+    line-height: 1.6;
+    max-width: 600px;
+  }
+
+  &__back {
+    padding: 2rem 0;
+
+    a:before {
+      content: "\2190";
+      display: inline-block;
+      margin-right: 5px;
+      vertical-align: text-top;
+    }
+  }
+
+  &__content {
+    background: white;
+    max-width: $widthLimit;
+    border-radius: 6px;
+    box-shadow: 0px 2px 6px 0px rgba(0, 0, 0, 0.2);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__description {
+    padding-right: 2vw;
+  }
+
+  &__body {
+    display: flex;
+  }
+
+  &__details {
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid #f0f0f0;
+
+    > div {
+      flex: 1 0 0;
+      padding: 2rem;
+    }
+
+    > div + div {
+      border-top: 1px solid #f0f0f0;
+    }
+  }
+
+  &__detail-title {
+    text-transform: uppercase;
+    font-size: 0.8em;
+    color: #999;
+    margin-bottom: 0.5rem;
+  }
 }
