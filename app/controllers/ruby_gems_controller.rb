@@ -15,7 +15,6 @@ class RubyGemsController < ApplicationController
 
   def show
     @rubygem = RubyGem.find(params[:id])
-    @brian = "Brian Earwood"
   end
 
   private

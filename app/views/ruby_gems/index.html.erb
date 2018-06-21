@@ -18,6 +18,10 @@
 
           <%= form_tag({}, {method: :get, class: 'search-demo__input-wrapper'}) do %>
             <%= text_field_tag(:q, params[:q], class: "search-demo__text-input", placeholder: "Search for Ruby gems...") %>
+            <div class="form-check">
+              <%= check_box_tag('popular', 1, params[:popular], class: 'form-check-input') %>
+              <label class="form-check-label" for="popular">Only Popular</label>
+            </div>
             <%= submit_tag("Search", class: "button search-demo__submit") %>
           <% end %>
       </div>
