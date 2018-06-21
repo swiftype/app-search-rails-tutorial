@@ -1,5 +1,7 @@
 <% if total_pages > 1 %>
-  <p>Page <%= current_page %> of <%= total_pages %></p>
+  <div class="results__result-count">
+    Page <strong><%= current_page %></strong> of <strong><%= total_pages %></strong>
+  </div>
   <nav aria-label="Search results pages">
     <ul class="pagination">
       <% if current_page == 1 %>

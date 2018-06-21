@@ -17,3 +17,14 @@
 //= require activestorage
 //= require turbolinks
 //= require_tree .
+
+$(document).ready(function () {
+
+  $('.search-demo__text-input').on('focus', function() {
+    $('.search-demo__input-wrapper').addClass('focus');
+  });
+  $('.search-demo__text-input').on('blur', function() {
+    $('.search-demo__input-wrapper').removeClass('focus');
+  });
+
+});

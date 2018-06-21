@@ -1,42 +1,77 @@
-<div class="starter-template">
-  <h1>Gem Hunt</h1>
-  <p class="lead">a RubyGems Search Engine <br> backed by Swiftype App Search</p>
 
-  <%= form_tag({}, {method: :get}) do %>
-    <div class="form-group row">
-      <%= text_field_tag(:q, params[:q], class: "form-control", placeholder: "My favorite gem...") %>
-    </div>
+<div class="ruby-demo">
+  <div class="site-background"></div>
+  <div class="search-demo <%= 'active-search' if @search_results&.any? %> -live-filtering">
+    <div class="search-demo__content">
 
-    <div class="form-group row">
-      <%= submit_tag("Search", class: "btn btn-primary mb-2") %>
-    </div>
-  <% end %>
-</div>
+      <%# Header %>
+      <div class="search-demo__header">
+        <div class="search-demo__headings">
+          <div class="search-demo__icon-wrap">
+            <%= image_tag('icons/icon-gem.svg', class: 'search-demo__icon', alt: 'Gem Search Icon') %>
+          </div>
+          <h1 class="search-demo__title">Gem Hunt</h1>
+          <h3 class="search-demo__sub-heading powered-by">
+            <%= image_tag('powered-by@2x.png', alt: 'Powered by Swiftype') %>
+          </h3>
+        </div>
 
-<div>
-  <% if @search_results&.any? %>
+          <%= form_tag({}, {method: :get, class: 'search-demo__input-wrapper'}) do %>
+            <%= text_field_tag(:q, params[:q], class: "search-demo__text-input", placeholder: "Search for Ruby gems...") %>
+            <div class="form-check">
+              <%= check_box_tag('popular', 1, params[:popular], class: 'form-check-input') %>
+              <label class="form-check-label" for="popular">Only Popular</label>
+            </div>
+            <%= submit_tag("Search", class: "button search-demo__submit") %>
+          <% end %>
+      </div>
 
-    <table class="table table-hover">
-      <thead class="thead-dark">
-        <tr>
-          <th scope="col">Gem Name</th>
-          <th scope="col">Authors</th>
-          <th scope="col">Details</th>
-        </tr>
-      </thead>
-      <tbody>
 
-        <% @search_results.each do |rubygem| %>
-          <tr>
-            <td><%= rubygem.name %></td>
-            <td><%= rubygem.authors %></td>
-            <td><%= link_to 'Gem Details', ruby_gem_path(rubygem) %></td>
-          </tr>
+      <%# Results %>
+      <div class="search-demo__body">
+        <% if @search_results&.any? %>
+          <div class="search-results">
+
+          <div class="results">
+            <div class="results__header">
+              <div class="results__result-count">
+                <% if @total_pages > 1 %>
+                  Page <strong><%= @current_page %></strong> of <strong><%= @total_pages %></strong>
+                <% end %>
+              </div>
+              <div class="results__powered-by powered-by">
+                <%= image_tag('powered-by@2x.png', alt: 'Powered by Swiftype') %>
+              </div>
+            </div>
+
+            <div class="results__body">
+              <ul>
+                <% @search_results.each do |rubygem| %>
+                  <li class="result">
+                    <div class="result__header">
+                      <div class="result__title"><%= link_to "#{rubygem.name}", ruby_gem_path(rubygem) %></div>
+
+                    </div>
+
+                    <div class="result__body">
+                      <p class="result__description"><%= rubygem.info %></p>
+                      <div class="result__details">
+                        <p><strong>Downloads: </strong><%= number_with_delimiter(rubygem.downloads, :delimiter => ',') %></p>
+                        <p><strong>Authors: </strong><%= rubygem.authors %></p>
+                      </div>
+                    </div>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+
+            <div class="results__footer">
+              <%= render "pagination", total_pages: @total_pages, current_page: @current_page, query: params[:q] %>
+            </div>
+          </div>
+        </div>
         <% end %>
-
-      </tbody>
-    </table>
-
-    <%= render "pagination", total_pages: @total_pages, current_page: @current_page, query: params[:q] %>
-  <% end %>
+      </div>
+    </div>
+  </div>
 </div>
