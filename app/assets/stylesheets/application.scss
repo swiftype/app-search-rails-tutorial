@@ -195,8 +195,6 @@ a.subtle-link {
     }
 
     .form-check {
-      // border: 1px solid #f0f0f0;
-      // border-radius: 4px;
       display: flex;
       align-items: center;
       width: 200px;
@@ -204,27 +202,7 @@ a.subtle-link {
       .form-check-input {
         margin-right: 7px;
         height: 100%;
-        // position: absolute;
-        // z-index: -1;
-        // opacity: 0;
-
-        // &:checked ~ .control__indicator {
-        //   width: 20px;
-        //   height: 20px;
-        //   background: red;
-        // }
       }
-
-      // .control__indicator {
-      //   width: 20px;
-      //   height: 20px;
-      //   background: gray;
-      // }
-
-      .form-check-label {
-
-      }
-
     }
   }
 
