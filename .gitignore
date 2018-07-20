@@ -34,3 +34,6 @@
 
 # Ignore the local swiftype.yml
 /config/swiftype.yml
+
+# Ignore DS_Store
+.DS_Store

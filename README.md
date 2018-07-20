@@ -2,8 +2,10 @@
 
 ![Initial App Screenshot](readme_images/initial-app.png)
 
-This is the code repository for the [App Search Rails Tutorial](https://swiftype.com/documentation/app-search/tutorials/rails).
+This companion repository for the App Search Rails tutorial, [How to Build Application Search with Ruby on Rails](https://swiftype.com/documentation/app-search/tutorials/rails). Follow the tutorial to build your own App Search experience from scratch. It's fun!
 
-To get started, clone this repository and follow along with the [instructions here](https://swiftype.com/documentation/app-search/tutorials/rails). If you'd rather just see the finished product, take a look at the [completed](https://github.com/swiftype/app-search-rails-tutorial/tree/completed) branch or visit: https://swifty...
+The finished product is available within the [completed](https://github.com/swiftype/app-search-rails-tutorial/tree/completed) branch.
 
-You should also check out our other tutorials and guides on [the App Search Documentation page](https://swiftype.com/documentation/app-search/getting-started)!
+[**The live version is here**](gemhunt.swiftype.info).
+
+We have even more guides and documentation. For that, dive into the [App Search Documentation](https://swiftype.com/documentation/app-search/getting-started).
