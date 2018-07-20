@@ -6,6 +6,6 @@ This companion repository for the App Search Rails tutorial, [How to Build Appli
 
 The finished product is available within the [completed](https://github.com/swiftype/app-search-rails-tutorial/tree/completed) branch.
 
-[**The live version is here**](gemhunt.swiftype.info).
+[**The live version is here**](http://gemhunt.swiftype.info).
 
 We have even more guides and documentation. For that, dive into the [App Search Documentation](https://swiftype.com/documentation/app-search/getting-started).
