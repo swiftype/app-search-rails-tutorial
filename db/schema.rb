@@ -10,11 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_04_12_183616) do
+ActiveRecord::Schema.define(version: 2018_07_19_192124) do
 
   create_table "ruby_gems", force: :cascade do |t|
     t.string "name"
-    t.string "authors"
+    t.text "authors"
     t.text "info"
     t.integer "downloads"
     t.datetime "created_at", null: false
